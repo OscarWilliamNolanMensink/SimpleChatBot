@@ -1,0 +1,25 @@
+@base=http://localhost:8000
+
+### Chat 1
+POST {{base}}/chat
+Content-Type: application/json
+
+{
+  "messages":[
+    {"role":"system","content":"You are helpful."},
+    {"role":"user","content":"Fun fact about Angular."}
+  ],
+  "max_new_tokens":128
+}
+
+### Chat 2
+POST {{base}}/chat
+Content-Type: application/json
+
+{
+  "messages":[
+    {"role":"system","content":"You are helpful."},
+    {"role":"user","content":"Tell me a CSS tip."}
+  ],
+  "max_new_tokens":128
+}

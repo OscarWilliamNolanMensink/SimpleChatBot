@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  api:
+    # CPU build/run (default)
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: zephyr-server
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_ID: HuggingFaceH4/zephyr-7b-beta
+      # offline & local path so it never fetches from the Hub
+      LOCAL_ONLY: "true"
+      LOCAL_MODEL_DIR: /app/hf-cache/zephyr
+      # persistent cache location inside the container
+      HF_HOME: /app/hf-cache
+      HUGGINGFACE_HUB_CACHE: /app/hf-cache
+      # hard-disable any accidental tokens
+      HUGGINGFACE_HUB_TOKEN: ""
+      HF_TOKEN: ""
+      # keep 4bit off on CPU
+      LOAD_IN_4BIT: "false"
+    volumes:
+      - ./hf-cache:/app/hf-cache
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/chat"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  api-gpu:
+    # GPU build/run (enable with: `--profile gpu`)
+    profiles: ["gpu"]
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    image: zephyr-server-gpu
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_ID: HuggingFaceH4/zephyr-7b-beta
+      LOCAL_ONLY: "true"
+      LOCAL_MODEL_DIR: /app/hf-cache/zephyr
+      HF_HOME: /app/hf-cache
+      HUGGINGFACE_HUB_CACHE: /app/hf-cache
+      HUGGINGFACE_HUB_TOKEN: ""
+      HF_TOKEN: ""
+      # quantize on GPU to save VRAM
+      LOAD_IN_4BIT: "true"
+    volumes:
+      - ./hf-cache:/app/hf-cache
+    # NOTE: Compose's GPU reservations only work in Swarm.
+    # For regular docker compose, start with:
+    #   docker compose --profile gpu up --build
+    # and ensure NVIDIA Container Toolkit is installed (`nvidia-smi` works).
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    restart: unless-stopped

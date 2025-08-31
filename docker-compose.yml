@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ./zephyr-server
+      dockerfile: Dockerfile
+    image: zephyr-server
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_ID: HuggingFaceH4/zephyr-7b-beta
+      LOCAL_ONLY: "true"
+      LOCAL_MODEL_DIR: /app/hf-cache/zephyr
+      HF_HOME: /app/hf-cache
+      HUGGINGFACE_HUB_CACHE: /app/hf-cache
+      HUGGINGFACE_HUB_TOKEN: ""
+      HF_TOKEN: ""
+      LOAD_IN_4BIT: "false"
+    volumes:
+      - ./zephyr-server/hf-cache:/app/hf-cache
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/chat"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  api-gpu:
+    profiles: ["gpu"]
+    build:
+      context: ./zephyr-server
+      dockerfile: Dockerfile.gpu
+    image: zephyr-server-gpu
+    ports:
+      - "8001:8000"
+    environment:
+      MODEL_ID: HuggingFaceH4/zephyr-7b-beta
+      LOCAL_ONLY: "true"
+      LOCAL_MODEL_DIR: /app/hf-cache/zephyr
+      HF_HOME: /app/hf-cache
+      HUGGINGFACE_HUB_CACHE: /app/hf-cache
+      HUGGINGFACE_HUB_TOKEN: ""
+      HF_TOKEN: ""
+      LOAD_IN_4BIT: "true"
+    volumes:
+      - ./zephyr-server/hf-cache:/app/hf-cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    restart: unless-stopped

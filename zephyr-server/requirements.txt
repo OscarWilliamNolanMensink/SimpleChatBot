@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+transformers>=4.42.0
+torch
+accelerate
+sentencepiece
+huggingface-hub
+# GPU-only optional for 4-bit:
+bitsandbytes
