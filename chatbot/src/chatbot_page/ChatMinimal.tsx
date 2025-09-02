@@ -48,7 +48,7 @@ export function ChatMinimal() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message…"
+          placeholder="Type a messa to the ai..."
           style={{ flex: 1, padding: 8 }}
         />
         <button type="submit" disabled={loading}>
