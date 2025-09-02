@@ -13,8 +13,8 @@
 # Running from zipfile 
 1. Have docker running on your computer
 2. At the root of this project call
-    For running through your GPU call ```docker compose up --build --profile api-gpu chatbot```
-    Or run through your CPU call      ```docker compose up --build --profile api chatbot```
+2.a. For running through your GPU call ```docker compose up --build --profile api-gpu chatbot```
+2.b. Or run through your CPU call      ```docker compose up --build --profile api chatbot```
 
 
 # PowerShell:
