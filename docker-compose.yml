@@ -33,7 +33,7 @@ services:
       dockerfile: Dockerfile.gpu
     image: zephyr-server-gpu
     ports:
-      - "8001:8000"
+      - "8000:8000"
     environment:
       MODEL_ID: HuggingFaceH4/zephyr-7b-beta
       LOCAL_ONLY: "true"
@@ -51,3 +51,13 @@ services:
           devices:
             - capabilities: ["gpu"]
     restart: unless-stopped
+
+
+  chatbot:
+    build:
+      context: ./chatbot
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
